@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AuraMeter } from '@/components/aura-meter'
 import { MoodTimeline } from '@/components/mood-timeline'
@@ -8,6 +9,34 @@ import { Button } from '@/components/ui/button'
 
 export default function DashboardPage() {
   const { currentMood, metrics } = useBehavior()
+
+  // Inject ad script on mount
+  useEffect(() => {
+    // Create first script tag (config)
+    const configScript = document.createElement('script')
+    configScript.type = 'text/javascript'
+    configScript.innerHTML = `
+      atOptions = {
+        'key' : '2e23b38401eeebaffb088aa3882fd286',
+        'format' : 'iframe',
+        'height' : 50,
+        'width' : 320,
+        'params' : {}
+      };
+    `
+    document.body.appendChild(configScript)
+
+    // Create second script tag (loader)
+    const adScript = document.createElement('script')
+    adScript.type = 'text/javascript'
+    adScript.src = '//www.highperformanceformat.com/2e23b38401eeebaffb088aa3882fd286/invoke.js'
+    document.body.appendChild(adScript)
+
+    return () => {
+      document.body.removeChild(configScript)
+      document.body.removeChild(adScript)
+    }
+  }, [])
 
   return (
     <div className="p-8 space-y-8">
@@ -19,7 +48,7 @@ export default function DashboardPage() {
 
       {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Aura Meter - takes up left 2 columns */}
+        {/* Aura Meter */}
         <div className="lg:col-span-2">
           <Card className="h-full">
             <CardHeader>
@@ -32,7 +61,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Timeline - right column */}
+        {/* Timeline */}
         <div>
           <Card className="h-full">
             <CardHeader>
@@ -46,7 +75,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Metrics grid */}
+      {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
